@@ -30,7 +30,7 @@ not in this repository.
 ```
 force_sensor/force_sensor.ino   The firmware. This is the substantive file.
 force_sensor.ino                Empty file at the repository root, left over from setup.
-website/App.jsx                 Single-file React front end, unfinished.
+website/                        Create React App front end, unfinished. src/App.js is the whole UI.
 .vscode/tasks.json              A clang build task from the editor. Unrelated to the firmware.
 README.md
 ```
@@ -124,16 +124,29 @@ There is no command in this sketch that does it.
 
 ## Web app
 
-`website/App.jsx` is a single-file React component sketching a site for the project, with
-navigation, a contact form, and a demo page. It is unfinished and should not be read as a
-working interface:
+`website/` is a Create React App project (React 19, `react-scripts`) whose entire UI lives in
+`website/src/App.js`. It sketches a site for the project, with navigation, a contact form, and a
+demo page.
+
+It runs, but it is **not** connected to the device, and nothing it displays comes from real
+hardware:
 
 - The "connect to Arduino" handler is a placeholder. It waits two seconds and reports success;
-  no serial connection is opened.
+  no serial connection is opened. The code carries a comment noting where
+  `navigator.serial.requestPort()` would go.
 - The demo plot is fed by `Math.random()`, not by the device.
 - The contact form logs to the console and does not submit anywhere.
-- There is no build configuration committed alongside it, so the component cannot be run from
-  this repository as it stands.
+
+To run it:
+
+```
+cd website
+npm install
+npm start
+```
+
+`tailwindcss` is listed in devDependencies but no Tailwind config is committed, so the styling
+comes from the plain CSS files. Treat this as a UI mockup, not a working interface to the rig.
 
 ## Known rough edges
 
