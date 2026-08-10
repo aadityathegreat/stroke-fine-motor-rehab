@@ -152,13 +152,12 @@ void setup() {
   Serial.print("Using full-scale = "); Serial.print(FULL_SCALE_FORCE, 1);
   Serial.println(" N\n");
 
-  // calibration persistence flag
-  if (EEPROM.read(EEPROM_FLAG_ADDR) != CALIB_DONE_FLAG) {
-    EEPROM.write(EEPROM_FLAG_ADDR, CALIB_DONE_FLAG);
-    Serial.println("Performing initial calibration...");
-  } else {
-    Serial.println("Loading calibration from EEPROM...");
-  }
+  // calibration persistence flag — only read it here. Sensor::begin() checks this same
+  // flag to decide whether to measure a zero offset or load a stored one, so setting it
+  // before that loop would skip calibration on a board whose EEPROM is still blank.
+  bool needsCalibration = (EEPROM.read(EEPROM_FLAG_ADDR) != CALIB_DONE_FLAG);
+  Serial.println(needsCalibration ? "Performing initial calibration..."
+                                  : "Loading calibration from EEPROM...");
 
   // load or prime tuning params
   if (EEPROM.read(EEPROM_TUNE_FLAG_ADDR) == TUNE_DONE_FLAG) {
@@ -177,6 +176,9 @@ void setup() {
 
   // initialize sensors
   for (auto &s : sensors) s.begin();
+
+  // mark the calibration valid only once every channel has stored an offset
+  if (needsCalibration) EEPROM.write(EEPROM_FLAG_ADDR, CALIB_DONE_FLAG);
 
   // help menu
   Serial.println("\nEnter commands:");
